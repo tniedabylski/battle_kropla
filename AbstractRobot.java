@@ -24,6 +24,9 @@ public abstract class AbstractRobot {
 	protected boolean isNearArchon = false;
 	protected BugNavigator navigator;
 
+    // wrog, ktory najlepiej atakowac, sposrod tych ktorzy sa w zasiegu wzroku
+	protected RobotInfo bestEnemy;
+
 	public AbstractRobot(RobotController _rc) {
 		rc = _rc;
 		messageQueue = new LinkedList<Message>();
@@ -234,6 +237,33 @@ public abstract class AbstractRobot {
         }
         return false;
     }
+
+    	protected void getBestEnemy() throws GameActionException {
+		RobotInfo bestOther = null, bestArch = null, bestChan = null;
+		int archDist = Integer.MAX_VALUE;
+        int chanDist = Integer.MAX_VALUE;
+        int dist = Integer.MAX_VALUE;
+		for (RobotInfo enemy : nearbyEnemyRobots) {
+				int dist2 = enemy.location.distanceSquaredTo(myLoc);
+				if (enemy.type.equals(RobotType.ARCHON) && dist2 < archDist) {
+					archDist = dist2;
+					bestArch = enemy;
+				}
+                else if (enemy.type.equals(RobotType.CANNON) && dist2 < chanDist) {
+					chanDist = dist2;
+					bestChan = enemy;
+				}
+                else if (dist2 < dist) {
+					dist = dist2;
+					bestOther = enemy;
+				}
+		}
+        if (bestChan != null)
+            bestEnemy = bestChan;
+        else if (bestArch != null)
+            bestEnemy = bestArch;
+        else bestEnemy = bestOther;
+	}
 
 	/**
 	 * Oblicza kierunek ucieczki jako kierunek od srodka ciezkosci miedzy

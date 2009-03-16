@@ -11,8 +11,6 @@ public abstract class AttackingRobot extends AbstractRobot {
 	protected MapLocation[] enemyRobotLocations = null;
 	// lokacja ostatnio widzianego wroga
 	protected MapLocation lastEnemyLocation;
-	// wrog, ktory najlepiej atakowac, sposrod tych ktorzy sa w zasiegu wzroku
-	protected RobotInfo bestEnemy;
 
 	public AttackingRobot(RobotController _rc) {
         super(_rc);
@@ -37,6 +35,7 @@ public abstract class AttackingRobot extends AbstractRobot {
 	// blisko, zeby mogl on nam dawac energon.
 	abstract protected boolean isCloseToArchon();
 
+    @Override
 	protected void getBestEnemy() throws GameActionException {
 		RobotInfo bestOther = null, bestArch = null, bestChan = null;
 		int archDist = Integer.MAX_VALUE;
@@ -49,7 +48,7 @@ public abstract class AttackingRobot extends AbstractRobot {
 					archDist = dist2;
 					bestArch = enemy;
 				}
-                else if (enemy.type.equals(RobotType.CHANNELER) && dist2 < chanDist) {
+                else if (enemy.type.equals(RobotType.CANNON) && dist2 < chanDist) {
 					chanDist = dist2;
 					bestChan = enemy;
 				}

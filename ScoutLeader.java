@@ -38,26 +38,26 @@ public class ScoutLeader extends AttackingRobot {
                 sendMessageTo(ID_BROADCAST, m);
             }
 
-            recruit();
+//            recruit();
 
             switch (goal) {
-				case TASK_PROTECT_ARCHON:
-					rc.setIndicatorString(0, rc.getRobotType().toString() + ": Protect Archon");
-					protectNearestArchon();
-					break;
-				case TASK_GO_ATTACK:
-					rc.setIndicatorString(0, rc.getRobotType().toString() + ": Moving (GO_ATTACK)");
-					rc.setIndicatorString(1, myLoc.toString() + " -> " + gotoDestination.toString());
-					gotoLocation(gotoDestination);
-					break;
-				case TASK_OFFENSIVE:
-					rc.setIndicatorString(0, rc.getRobotType().toString() + ": Offensive");
-					offensive();
-					break;
-				default:
-					doExplore();
-					break;
-			}
+                case TASK_PROTECT_ARCHON:
+                    rc.setIndicatorString(0, rc.getRobotType().toString() + ": Protect Archon");
+                    protectNearestArchon();
+                    break;
+                case TASK_GO_ATTACK:
+                    rc.setIndicatorString(0, rc.getRobotType().toString() + ": Moving (GO_ATTACK)");
+                    rc.setIndicatorString(1, myLoc.toString() + " -> " + gotoDestination.toString());
+                    gotoLocation(gotoDestination);
+                    break;
+                case TASK_OFFENSIVE:
+                    rc.setIndicatorString(0, rc.getRobotType().toString() + ": Offensive");
+                    offensive();
+                    break;
+                default:
+                    doExplore();
+                    break;
+            }
         }
     }
 
@@ -68,25 +68,14 @@ public class ScoutLeader extends AttackingRobot {
             gotoDestination = null;
         }
 
-        if (group.size() < 2) {
-            goal = TASK_PROTECT_ARCHON;
-            return;
-        }
+//        if (group.size() < 2) {
+//            goal = TASK_PROTECT_ARCHON;
+//            return;
+//        }
 
         if (bestEnemy != null) {
             if (canAttack(bestEnemy)) {
-                sendGoAttackMessage(bestEnemy.location);
-                if(bestEnemy.location.distanceSquaredTo(myLoc) < 9)
-                    goal = TASK_ESCAPE;
-                else
-                    goal = TASK_OFFENSIVE;
-            }
-            else if (gotProtectArchonMessage) {
-                goal = TASK_PROTECT_ARCHON;
-            }
-            else {
-                goal = TASK_GO_ATTACK;
-                gotoDestination = bestEnemy.location;
+                goal = TASK_OFFENSIVE;
             }
         }
         else if (gotProtectArchonMessage) {
@@ -96,7 +85,7 @@ public class ScoutLeader extends AttackingRobot {
             goal = TASK_GO_ATTACK;
         }
         else
-            goal = TASK_PROTECT_ARCHON;
+            goal = TASK_OFFENSIVE;
 
         rc.setIndicatorString(2, "Goal " + goal);
     }
@@ -148,6 +137,14 @@ public class ScoutLeader extends AttackingRobot {
         }
         return;
     }
+
+    @Override
+    protected void offensive() throws GameActionException {
+        sendGoAttackMessage(bestEnemy.location);
+        super.offensive();
+    }
+
+
 
     private void sendGoAttackMessage(MapLocation loc) throws GameActionException {
         Message m = new Message();

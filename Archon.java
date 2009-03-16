@@ -60,6 +60,7 @@ public class Archon extends AbstractRobot {
                 continue;
             }
 			senseNearbyRobots();
+            getBestEnemy();
 			doFeed();
 
             if (Clock.getBytecodeNum() > 3000) {
@@ -168,11 +169,14 @@ public class Archon extends AbstractRobot {
         Message m = new Message();
         m.ints = new int[MESSAGE_MIN_INTS];
         m.ints[INDEX_CMD] = MSG_ENEMY_LOCATIONS;
-        m.locations = new MapLocation[nearbyEnemyRobots.size()];
-        int i = 0;
-        for (RobotInfo ri : nearbyEnemyRobots) {
-            m.locations[i++] = ri.location;
-        }
+//        m.locations = new MapLocation[nearbyEnemyRobots.size()];
+//        int i = 0;
+//        for (RobotInfo ri : nearbyEnemyRobots) {
+//            m.locations[i++] = ri.location;
+//        }
+        m.locations = new MapLocation[1];
+        m.locations[0] = bestEnemy.location;
+
         sendMessageToAll(m);
     }
 
@@ -400,8 +404,10 @@ public class Archon extends AbstractRobot {
 //            if (!createdScout) {
 //                createdScout = spawnScout();
 //            }
-            if (spawnSoldier())
-                sendGoAttackMessage(nearbyEnemyRobots.get(0).location);
+            if (Clock.getRoundNum() % 128 == 0 && spawnScout())
+                sendGoAttackMessage(bestEnemy.location);
+            else if (spawnSoldier())
+                sendGoAttackMessage(bestEnemy.location);
             else if (existsCannon)
                 sendEnemyLocations();
             else
